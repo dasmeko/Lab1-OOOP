@@ -74,6 +74,20 @@ public:
 		return 0;
 	}
 
+	pair<int, int> findValue(const T& val) {
+		if (hasYaleFormat) {
+			convertFromYale();
+		}
+
+		for (int i = 0; i < rowSize; i++) {
+			for (auto p : dataLIL[i]) {
+				if (p.second == val) {
+					return pait<int, int>(i, p.first);
+				}
+			}
+		}
+	}
+
 public:
 	void convert() {
 		if (hasYaleFormat) {
