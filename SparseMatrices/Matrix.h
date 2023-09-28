@@ -88,12 +88,59 @@ public:
 		}
 	}
 
-public:
+	T findFirstValueByCriteria(bool (*function)(T)) {
+		if (hasYaleFormat) {
+			convertFromYale();
+		}
+
+		for (int i = 0; i < rowSize; i++) {
+			for (auto p : dataLIL[i]) {
+				if (function(val)) {
+					return pait<int, int>(i, p.first);
+				}
+			}
+		}
+	}
+
 	void convert() {
 		if (hasYaleFormat) {
 			convertFromYale();
 		} else {
 			convertToYale();
+		}
+	}
+
+	void display() {
+		if (hasYaleFormat) {
+			convertFromYale();
+		}
+		
+		for (int i = 0; i < rowSize; i++) {
+			int k = 0;
+
+			if (dataLIL[i].size()) {
+				for (int j = 0; j < dataLIL[i].size(); j++) {
+					while (k < dataLIL[i][j].first) {
+						cout << 0 << '\t';
+						k++;
+					}
+
+					cout << dataLIL[i][j].second << '\t';
+					k++;
+				}
+
+				while (k < colSize) {
+					cout << 0 << '\t';
+					k++;
+				}
+			}
+			else {
+				for (int j = 0; j < colSize; j++) {
+					cout << 0 << '\t';
+				}
+			}
+
+			cout << endl;
 		}
 	}
 
@@ -129,40 +176,5 @@ private:
 		}
 
 		dataYale = YaleFormat<T>();
-	}
-
-public:
-	void display() {
-		if (hasYaleFormat) {
-			convertFromYale();
-		}
-		
-		for (int i = 0; i < rowSize; i++) {
-			int k = 0;
-
-			if (dataLIL[i].size()) {
-				for (int j = 0; j < dataLIL[i].size(); j++) {
-					while (k < dataLIL[i][j].first) {
-						cout << 0 << '\t';
-						k++;
-					}
-
-					cout << dataLIL[i][j].second << '\t';
-					k++;
-				}
-
-				while (k < colSize) {
-					cout << 0 << '\t';
-					k++;
-				}
-			}
-			else {
-				for (int j = 0; j < colSize; j++) {
-					cout << 0 << '\t';
-				}
-			}
-
-			cout << endl;
-		}
 	}
 };
