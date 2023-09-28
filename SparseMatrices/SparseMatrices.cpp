@@ -10,5 +10,8 @@ int main() {
 
     m.display();
 
+    m.convert();
+    m.display();
+
     return 0;
 }
