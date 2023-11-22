@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <functional>
 #include <vector>
 
 using namespace std;
@@ -82,24 +83,32 @@ public:
 		for (int i = 0; i < rowSize; i++) {
 			for (auto p : dataLIL[i]) {
 				if (p.second == val) {
-					return pait<int, int>(i, p.first);
+					return pair<int, int>(i, p.first);
 				}
 			}
 		}
+
+		return pair<int, int>(-1, -1);
 	}
 
-	T findFirstValueByCriteria(bool (*function)(T)) {
+	T findFirstValueByCriteria(function<bool(T)> func) {
 		if (hasYaleFormat) {
-			convertFromYale();
-		}
-
-		for (int i = 0; i < rowSize; i++) {
-			for (auto p : dataLIL[i]) {
-				if (function(val)) {
-					return pait<int, int>(i, p.first);
+			for (auto v : dataYale.values) {
+				if (func(v)) {
+					return v;
+				}
+			}
+		} else {
+			for (auto row : dataLIL) {
+				for (auto p : row) {
+					if (func(p.second)) {
+						return p.second;
+					}
 				}
 			}
 		}
+
+		throw invalid_argument("No elements pass the criteria");
 	}
 
 	void convert() {
@@ -140,13 +149,12 @@ public:
 				}
 			}
 
-			cout << endl;
+			cout << '\n';
 		}
 	}
 
 private:
 	void convertToYale() {
-		dataYale = YaleFormat<T>();
 		hasYaleFormat = true;
 
 		int k = 0;
@@ -166,10 +174,9 @@ private:
 	}
 
 	void convertFromYale() {
-		dataLIL = vector<vector<pair<int, T>>>(rowSize, vector<pair<int, T>>());
 		hasYaleFormat = false;
 
-		for (int i = 0; i < dataYale.rowDividers.size() - 1; i++) {
+		for (int i = 0; i < rowSize; i++) {
 			for (int j = dataYale.rowDividers[i]; j < dataYale.rowDividers[i + 1]; j++) {
 				dataLIL[i].push_back(pair<int, T>(dataYale.colIndeces[j], dataYale.values[j]));
 			}
