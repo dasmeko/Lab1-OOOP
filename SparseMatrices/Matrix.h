@@ -40,7 +40,7 @@ public:
 		if (hasYaleFormat) {
 			convertFromYale();
 		}
-		
+
 		vector<pair<int, T>> row = dataLIL[i];
 		int k = 0;
 		while (k < row.size()) {
@@ -65,14 +65,14 @@ public:
 		if (hasYaleFormat) {
 			convertFromYale();
 		}
-		
+
 		for (pair<int, T> p : dataLIL[i]) {
 			if (p.first == j) {
 				return p.second;
 			}
 		}
 
-		return 0;
+		return T(0);
 	}
 
 	pair<int, int> findValue(const T& val) {
@@ -111,7 +111,7 @@ public:
 		throw invalid_argument("No elements pass the criteria");
 	}
 
-	Matrix<T> operator+(Matrix<T> other) {
+	Matrix<T> operator+(Matrix<T>& other) {
 		if (rowSize != other.rowSize || colSize != other.colSize) {
 			throw invalid_argument("Incompatible matrices for addition");
 		}
@@ -128,11 +128,11 @@ public:
 		for (int i = 0; i < rowSize; i++) {
 			vector<pair<int, T>> sRow = dataLIL[i], oRow = other.dataLIL[i];
 			int x = 0, y = 0;
-			
+
 			for (int j = 0; j < colSize; j++) {
-				pair<int, T> a = (x < sRow.size()) ? sRow[x] : pair<int, T>(-1, -1);
-				pair<int, T> b = (y < oRow.size()) ? oRow[y] : pair<int, T>(-1, -1);
-				
+				pair<int, T> a = (x < sRow.size()) ? sRow[x] : pair<int, T>(-1, T(0));
+				pair<int, T> b = (y < oRow.size()) ? oRow[y] : pair<int, T>(-1, T(0));
+
 				if (a.first == j) {
 					if (b.first == j) {
 						result.dataLIL[i].push_back(pair<int, T>(j, a.second + b.second));
@@ -158,12 +158,58 @@ public:
 		return result;
 	}
 
-	void convert() {
+	Matrix<T> operator-(Matrix<T> other) {
+		return operator+(other.operator*(-1));
+	}
+
+	Matrix<T> operator*(const T& scalar) const {
+		Matrix<T> result(rowSize, colSize);
+
+		if (hasYaleFormat) {
+			result.convertToYale();
+			result.dataYale.colIndeces = dataYale.colIndeces;
+			result.dataYale.rowDividers = dataYale.rowDividers;
+			result.dataYale.values = vector<T>(dataYale.values.size());
+			for (int i = 0; i < dataYale.values.size(); i++) {
+				result.dataYale.values[i] = scalar * dataYale.values[i];
+			}
+		} else {
+			for (int i = 0; i < dataLIL.size(); i++) {
+				for (int j = 0; j < dataLIL[i].size(); j++) {
+					pair<int, T> p = dataLIL[i][j];
+					result.dataLIL[i].push_back(pair<int, T>(p.first, p.second * scalar));
+				}
+			}
+		}
+
+		return result;
+	}
+
+	vector<T> operator*(const vector<T>& v) {
+		if (v.size() != colSize) {
+			throw invalid_argument("Incompatible vector for multiplication");
+		}
+
+		vector<T> result = vector<T>(rowSize, T(0));
+
 		if (hasYaleFormat) {
 			convertFromYale();
 		} else {
-			convertToYale();
+			for (int i = 0; i < rowSize; i++) {
+				vector<pair<int, T>> row = dataLIL[i];
+				int x = 0;
+
+				for (int j = 0; j < colSize; j++) {
+					pair<int, T> a = (x < row.size()) ? row[x] : pair<int, T>(-1, T(0));
+
+					if (a.first == j) {
+						result[i] += a.second * v[j];
+					}
+				}
+			}
 		}
+
+		return result;
 	}
 
 	void display() {
@@ -200,7 +246,6 @@ public:
 		}
 	}
 
-private:
 	void convertToYale() {
 		if (!hasYaleFormat) {
 			hasYaleFormat = true;
