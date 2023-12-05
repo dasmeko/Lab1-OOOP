@@ -152,7 +152,7 @@ public:
 		}
 
 		if (converted) {
-			other.convert();
+			other.convertFromYale();
 		}
 
 		return result;
@@ -193,7 +193,13 @@ public:
 		vector<T> result = vector<T>(rowSize, T(0));
 
 		if (hasYaleFormat) {
-			convertFromYale();
+			int k = 0;
+			for (int i = 0; i < rowSize; i++) {
+				for (int j = dataYale.rowDividers[i]; j < dataYale.rowDividers[i + 1]; j++) {
+					result[i] += v[dataYale.colIndeces[j]] * dataYale.values[k];
+					k++;
+				}
+			}
 		} else {
 			for (int i = 0; i < rowSize; i++) {
 				vector<pair<int, T>> row = dataLIL[i];
@@ -204,6 +210,7 @@ public:
 
 					if (a.first == j) {
 						result[i] += a.second * v[j];
+						x++;
 					}
 				}
 			}
@@ -211,6 +218,28 @@ public:
 
 		return result;
 	}
+
+	/*
+	Matrix<T> operator*(Matrix<T>& other) {
+		if (colSize != other.rowSize) {
+			throw invalid_argument("Incompatible matrices for multiplication");
+		}
+
+		Matrix<T> result(rowSize, other.colSize);
+		convertFromYale();
+
+		bool converted = false;
+		if (other.hasYaleFormat) {
+			other.convertFromYale();
+			converted = true;
+		}
+
+		if (converted) {
+			other.convertToYale();
+		}
+
+		return result;
+	}*/
 
 	void display() {
 		if (hasYaleFormat) {
