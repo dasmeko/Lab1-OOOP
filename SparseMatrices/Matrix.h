@@ -218,8 +218,7 @@ public:
 
 		return result;
 	}
-
-	/*
+ 
 	Matrix<T> operator*(Matrix<T>& other) {
 		if (colSize != other.rowSize) {
 			throw invalid_argument("Incompatible matrices for multiplication");
@@ -234,12 +233,25 @@ public:
 			converted = true;
 		}
 
+		for (int i = 0; i < rowSize; i++) {
+			for (int j = 0; j < colSize; j++) {
+				T s = T(0);
+				for (auto p : dataLIL[i]) {
+					T val;
+					if (val = other.getValue(p.first, j)) {
+						s += p.second * val;
+					}
+				}
+				result.setValue(i, j, s);
+			}
+		}
+
 		if (converted) {
 			other.convertToYale();
 		}
 
 		return result;
-	}*/
+	}
 
 	void display() {
 		if (hasYaleFormat) {
