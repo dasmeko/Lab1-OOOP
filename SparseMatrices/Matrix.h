@@ -32,6 +32,41 @@ public:
 		dataYale = YaleFormat<T>();
 	}
 
+	void convertToYale() {
+		if (!hasYaleFormat) {
+			hasYaleFormat = true;
+
+			int k = 0;
+			for (int i = 0; i < rowSize; i++) {
+				dataYale.rowDividers.push_back(k);
+
+				for (auto p : dataLIL[i]) {
+					dataYale.colIndeces.push_back(p.first);
+					dataYale.values.push_back(p.second);
+					k++;
+				}
+			}
+
+			dataYale.rowDividers.push_back(k);
+
+			dataLIL = vector<vector<pair<int, T>>>(rowSize, vector<pair<int, T>>());
+		}
+	}
+
+	void convertFromYale() {
+		if (hasYaleFormat) {
+			hasYaleFormat = false;
+
+			for (int i = 0; i < rowSize; i++) {
+				for (int j = dataYale.rowDividers[i]; j < dataYale.rowDividers[i + 1]; j++) {
+					dataLIL[i].push_back(pair<int, T>(dataYale.colIndeces[j], dataYale.values[j]));
+				}
+			}
+
+			dataYale = YaleFormat<T>();
+		}
+	}
+
 	void setValue(const int& i, const int& j, const T& val) {
 		if (i < 0 || i >= rowSize || j < 0 || j >= colSize) {
 			throw invalid_argument("Indeces out of bounds");
@@ -111,7 +146,7 @@ public:
 		throw invalid_argument("No elements pass the criteria");
 	}
 
-	Matrix<T> operator+(Matrix<T>& other) {
+	Matrix<T> operator+(Matrix<T> other) {
 		if (rowSize != other.rowSize || colSize != other.colSize) {
 			throw invalid_argument("Incompatible matrices for addition");
 		}
@@ -284,41 +319,6 @@ public:
 			}
 
 			cout << '\n';
-		}
-	}
-
-	void convertToYale() {
-		if (!hasYaleFormat) {
-			hasYaleFormat = true;
-
-			int k = 0;
-			for (int i = 0; i < rowSize; i++) {
-				dataYale.rowDividers.push_back(k);
-
-				for (auto p : dataLIL[i]) {
-					dataYale.colIndeces.push_back(p.first);
-					dataYale.values.push_back(p.second);
-					k++;
-				}
-			}
-
-			dataYale.rowDividers.push_back(k);
-
-			dataLIL = vector<vector<pair<int, T>>>(rowSize, vector<pair<int, T>>());
-		}
-	}
-
-	void convertFromYale() {
-		if (hasYaleFormat) {
-			hasYaleFormat = false;
-
-			for (int i = 0; i < rowSize; i++) {
-				for (int j = dataYale.rowDividers[i]; j < dataYale.rowDividers[i + 1]; j++) {
-					dataLIL[i].push_back(pair<int, T>(dataYale.colIndeces[j], dataYale.values[j]));
-				}
-			}
-
-			dataYale = YaleFormat<T>();
 		}
 	}
 };
