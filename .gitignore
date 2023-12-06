@@ -32,4 +32,5 @@
 *.app
 
 /.vs
-/SparseMatrices/x64/Debug
+/SparseMatrices/x64
+/SparseMatrices/Debug
