@@ -53,6 +53,25 @@ struct Line {
 		return acos((a * other.a + b * other.b) / sqrt((a * a + b * b) * (other.a * other.a + other.b * other.b)));
 	}
 
+	Line reflect(Line other) {
+		vector<pair<double, double>> points = intersect(other);
+		if (points.size() == 0) {
+			return Line(other.a, other.b, 2 * c - other.c);
+		}
+		pair<double, double> point = points[0];
+
+		double d = (other.a * a + other.b * b) / sqrt(other.a * other.a + other.b * other.b);
+		double D = 4 * a * b - 4 * (a * a - d * d);
+		double b1 = (-a * b + sqrt(a * a * b * b - a * a - d * d)) / (b * b - d * d);
+		double b2 = (-a * b - sqrt(a * a * b * b - a * a - d * d)) / (b * b - d * d);
+		double c1 = -point.first - b1 * point.second, c2 = -point.first - b2 * point.second;
+		if (abs(other.b / a - b1) < 10e-8 && abs(other.c / a - c1) < 10e-8) {
+			return Line(1, b1, c1);
+		} else {
+			return Line(1, b2, c2);
+		}
+	}
+
 	Circle reflect(Circle circle) {
 		double d = a * a + b * b;
 		double x = (circle.x * b * b - circle.x * a * a - 2 * circle.y * a * b - 2 * a * c) / d;
