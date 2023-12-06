@@ -43,6 +43,13 @@ struct Line {
 			return vector<pair<double, double>>{pair<double, double>(X1, Y1), pair<double, double>(X2, Y2)};
 		}
 	}
+
+	Circle reflect(Circle circle) {
+		double d = a * a + b * b;
+		double x = (circle.x * b * b - circle.x * a * a - 2 * circle.y * a * b - 2 * a * c) / d;
+		double y = (circle.y * a * a - circle.y * b * b - 2 * circle.x * a * b - 2 * b * c) / d;
+		return Circle(x, y, circle.r);
+	}
 };
 
 struct Circle {
