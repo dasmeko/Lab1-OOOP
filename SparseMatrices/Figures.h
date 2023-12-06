@@ -59,4 +59,23 @@ struct Circle {
 	vector<pair<double, double>> intersect(Line line) {
 		return line.intersect(Circle(x, y, r));
 	}
+
+	vector<pair<double, double>> intersect(Circle other) {
+		double d = sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));
+		if (d > r + other.r || d == 0) {
+			return vector<pair<double, double>>();
+		}
+
+		double ux = (x - other.x) / d, uy = (y - other.y) / d;
+		if (d == r + other.r) {
+			return vector<pair<double, double>>{pair<double, double>(ux, uy)};
+		}
+
+		double vx = x + (d * d - other.r * other.r + r * r) / (2 * d) * ux;
+		double vy = y + (d * d - other.r * other.r + r * r) / (2 * d) * uy;
+		double uPerpx = uy, uPerpy = -ux;
+		double a = sqrt((-d + other.r - r) * (-d - other.r + r) * (-d + other.r + r) * (d + other.r + r)) / d;
+		double x1 = ux + a / 2 * uPerpx, y1 = uy + a / 2 * uPerpy, x2 = ux - a / 2 * uPerpx, y2 = uy - a / 2 * uPerpy;
+		return vector<pair<double, double>>{pair<double, double>(x1, y1), pair<double, double>(x2, y2)};
+	}
 };
