@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <cmath>
 
 using namespace std;
 
@@ -42,6 +43,14 @@ struct Line {
 			double X1 = -(b * Y1 + c) / a, X2 = -(b * 2 + c) / a;
 			return vector<pair<double, double>>{pair<double, double>(X1, Y1), pair<double, double>(X2, Y2)};
 		}
+	}
+
+	double angle(Line other) {
+		if (intersect(other).size() == 0) {
+			return 0;
+		}
+
+		return acos((a * other.a + b * other.b) / sqrt((a * a + b * b) * (other.a * other.a + other.b * other.b)));
 	}
 
 	Circle reflect(Circle circle) {
